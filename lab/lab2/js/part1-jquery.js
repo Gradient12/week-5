@@ -13,6 +13,7 @@ var Stamen_TonerLite = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/ton
   ext: 'png'
 }).addTo(map);
 
+var myMarkers = [];
 /* =====================
   Lab 2, Part 1 - jQuery
 
@@ -148,6 +149,91 @@ var Stamen_TonerLite = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/ton
     Use `_.isEqual` to make sure the object you feed in is the same as the one you read back out.
 ===================== */
 
+var form = {};
+
+var UpdateForm = function(){
+  form = {
+    title : $('#text-input1').val(),
+    name : $('#text-input2').val(),
+    address : $('#text-input3').val(),
+    age : $('#numeric-input').val(),
+    married : $('#cbox-input1').prop("checked"),
+    hasChildren : $('#cbox-input2').prop("checked"),
+    favoriteColor : $('#color-input').val(),
+    latitude:$('#numeric-input-lat').val(),
+    longitude:$('#numeric-input-lng').val(),
+    description:$('#text-input4').val()
+  };
+};
+
 $(document).ready(function() {
   // Do your stuff here
+  $('#text-label1').text('My title is');
+  $('#text-label2').text('My name is');
+  $('#text-label3').text('My address is');
+  $('#number-label').text('My age is');
+  $('#checkbox-label1').text('I am married.');
+  $('#checkbox-label2').text('I have children.');
+  $('#color-label').text('My favorite color is');
+  $('button').text('Submit');
+  $('#text-label4').text('Description');
+
+  // Enable all inputs
+  $('#text-input1').prop('disabled',false);
+  $('#text-input2').prop('disabled',false);
+  $('#text-input3').prop('disabled',false);
+  $('#numeric-input').prop('disabled',false);
+  $('#cbox-input1').prop('disabled',false);
+  $('#cbox-input2').prop('disabled',false);
+  $('#color-input').prop('disabled',false);
+
+
+  $('#text-input1').val('Mr');
+  $('#text-input2').val('W');
+  $('#text-input3').val('Meyerson hall');
+  $('#numeric-input').val('100');
+  $('#cbox-input1').prop("checked",true);
+  $('#cbox-input2').prop("checked",true);
+  $('#color-input').val('#FFFFFF');
+  $('button').val('Submit');
+  $('#text-input4').val('Your description goes here.');
+
+  $('#numeric-input-lat').val(39.9522);
+  $('#numeric-input-lng').val(-75.1639);
+
+  UpdateForm();
+  console.log(form);
+
+  $( "button" ).click(function() {
+    resetMap();
+    UpdateForm();
+    var lat = form.latitude;
+    var lng = form.longitude;
+
+
+    var pathOpts = {'radius': 10,
+                'fillColor': form.favoriteColor};
+    var description = form.description;
+    myMarkers = [L.circleMarker([lat, lng],pathOpts).bindPopup(description)];
+
+    _.each(myMarkers,function(m){
+      m.addTo(map);
+    });
+
+    var alartString = "Here is your marker:\n";
+    for (var i in form){
+      alartString+= i +": " + form[i] +"\n";
+    }
+
+    alert(alartString);
+
+  });
+
 });
+
+var resetMap = function() {
+  _.each(myMarkers,function(m){
+    map.removeLayer(m);
+  });
+  myMarkers = [];
+};
